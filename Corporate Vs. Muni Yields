@@ -1,0 +1,42 @@
+#below code shows how to visualize the after tax yield curve of BBB corproates and pre tax AAA munis to determine the breakeven point
+
+#import packages
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+from matplotlib.patches import Rectangle
+from matplotlib.backends.backend_pdf import PdfPages
+
+#grab data from csv file. Cotains AAA muni yield curve and BBB pre tax yield curve
+df=pd.read_csv('Tax Equivalent Yield Curve.csv')
+
+#adjust BBB curve for net impact of taxes using various tax rate scenarios
+#this code adds a column to the data frame after calculating the impact of taxes for each tax rate
+df=df.assign(AT_Yield_35=lambda x:df['BBB Curve']*(1-.35))
+df=df.assign(AT_Yield_30=lambda x:df['BBB Curve']*(1-.30))
+df=df.assign(AT_Yield_21=lambda x:df['BBB Curve']*(1-.21))
+
+
+#use matplotlib to visualize the results
+
+N=df['Tenor'].count
+x=df['Tenor']
+y=df['AT_Yield_35']
+
+
+graph=plt.title('After Tax BBB Corporate Yields')
+plt.plot(x,y,label='35%',color='red')
+plt.plot(x,df['AT_Yield_30'],label='30%')
+plt.plot(x,df['AT_Yield_21'],label='21%')
+plt.plot(x,df['Muni Yield'],label='Muni Yield Untaxed')
+plt.xlabel('Maturity')
+plt.ylabel('After Tax Yield')
+plt.legend()
+plt.draw()
+
+#saves graph as a PDF
+plt.savefig('AT_Yields.pdf')
+
+
+
