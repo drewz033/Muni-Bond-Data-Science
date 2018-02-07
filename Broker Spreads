@@ -1,0 +1,36 @@
+#Following code pulls transaction histroy from recent purchases and detemrines how much spread a broker is taking in comission from
+#from trades. Helps to identify who is working for less versus more.
+
+import pandas as pd
+import numpy as np
+
+#make sure you have all relevant information i.e. cusip broker trade date etc. There is a function on bloomberg that allows you to find
+#the min and max price of a given trade based off of date and time. if you know the time in which your trade was executed, you can pull
+#this information into your csv file using bloomberg excel API
+df=pd.read_csv('csv file of ytd trades'.csv)
+
+
+#some retail trades do not need to report on MSRB. Theese trades will unfortunately not work since their is not electronic trace of the trade
+df_new=df[df['Min Price']!=df['Max Price']]
+
+#set prices as floats
+df_new[['Min Price']]=df_new[['Min Price']].astype('float')
+df_new['Max Price']=df_new[['Max Price']].astype('float')
+
+#create new column showing spread
+df_new['Spread']=df_new['Max Price']-df_new['Min Price']
+
+#money spread is simply comission in terms of actual money (this is based off of QTY). this is just for visualization purposes
+df_new['Money Spread']=(df_new['Spread']*10)*df_new['Qty (M)']]
+
+
+df_broker=df_new.sort_values(['BrkrName'])
+
+#this standardizes the data set. some trades are printed accidentally and can cause large dispersion in data
+#this take the mean of spreads and only keeps those within 1 standard deviation of the mean
+
+df_normalized=df_broker[np.abs(df_broker['Spread']-df_broker['Spread'].mean())<=(1*df_broker['Spread'].std())]
+
+
+#this will allow you to visualize the avergae comission taken out of each trade
+df_normalized.groupby(['BrkrName']).mean()
