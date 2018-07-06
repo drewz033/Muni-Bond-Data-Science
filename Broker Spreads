@@ -1,5 +1,5 @@
-#Following code pulls transaction histroy from recent purchases and detemrines how much spread a broker is taking in comission from
-#from trades. Helps to identify who is working for less versus more.
+#Following code pulls transaction histroy from recent purchases and detemrines how much spread a broker is taking in commission from
+#trades. Helps to identify who is working for less versus more.
 
 import pandas as pd
 import numpy as np
@@ -27,10 +27,10 @@ df_new['Money Spread']=(df_new['Spread']*10)*df_new['Qty (M)']]
 df_broker=df_new.sort_values(['BrkrName'])
 
 #this standardizes the data set. some trades are printed accidentally and can cause large dispersion in data
-#this take the mean of spreads and only keeps those within 1 standard deviation of the mean
+#this takes the mean of spreads and only keeps those within 1 standard deviation of the mean
 
 df_normalized=df_broker[np.abs(df_broker['Spread']-df_broker['Spread'].mean())<=(1*df_broker['Spread'].std())]
 
 
-#this will allow you to visualize the avergae comission taken out of each trade
+#this will allow you to visualize the avergae commission taken out of each trade
 df_normalized.groupby(['BrkrName']).mean()
